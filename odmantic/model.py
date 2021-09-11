@@ -678,12 +678,19 @@ class _BaseODMModel(pydantic.BaseModel, metaclass=ABCMeta):
             an instance of the Model class this method is called on.
         """
         errors, obj = cls._parse_doc_to_obj(raw_doc)
-        if len(errors) > 0:
-            raise DocumentParsingError(
-                errors=[errors],
-                model=cls,
-                primary_value=raw_doc.get("_id", "<unknown>"),
-            )
+
+        ###
+        ### This is too strict to handle NoSQL.
+        ### This will allow odmantic to parse object with lack fields and keys
+        ### 2021/09/11 fixed by yuhattor 
+        ###
+
+        # if len(errors) > 0:
+        #     raise DocumentParsingError(
+        #         errors=[errors],
+        #         model=cls,
+        #         primary_value=raw_doc.get("_id", "<unknown>"),
+        #     )
         try:
             instance = cls.parse_obj(obj)
         except ValidationError as e:
